@@ -12,4 +12,9 @@ export class Player {
     this.x += this.dx;
     this.y += this.dy;
   }
+
+  render(ctx) {
+    ctx.fillStyle = "white";
+    ctx.fillRect(this.x, this.y, 20, 20);
+  }
 }

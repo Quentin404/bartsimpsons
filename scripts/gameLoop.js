@@ -1,11 +1,8 @@
 import { Player } from "./player.js"
-import { RenderEngine } from "./renderEngine.js";
 
 // Initialize the game canvas
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-const renderEngine = new RenderEngine();
-renderEngine.setContext(ctx); 
 
 // Create the player object
 const player = new Player(canvas.width / 2, canvas.height / 2);
@@ -21,12 +18,7 @@ window.addEventListener("keyup", (event) => {
   keys[event.key] = false;
 });
 
-// Game loop
-function gameLoop() {
-  // Clear the canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Update the player's movement
+function HandleInputs() {
   if (keys["ArrowUp"] && keys["ArrowDown"]) {
     player.dy = 0;
   }
@@ -49,10 +41,18 @@ function gameLoop() {
   } else {
     player.dx = 0;
   }
+}
+
+console.log(ctx.canvas.width);
+
+// Game loop
+function gameLoop() {
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+  HandleInputs();
 
   player.update();
-
-  renderEngine.render(player);
+  player.render(ctx);
   
   requestAnimationFrame(gameLoop);
 }
