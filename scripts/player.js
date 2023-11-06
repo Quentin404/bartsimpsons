@@ -11,8 +11,5 @@ export class Player {
   update() {
     this.x += this.dx;
     this.y += this.dy;
-    
-    ctx.fillStyle = "white";
-    ctx.fillRect(x, y, 20, 20);
   }
 }

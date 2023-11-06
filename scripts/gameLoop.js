@@ -1,8 +1,11 @@
 import { Player } from "./player.js"
+import { RenderEngine } from "./renderEngine.js";
 
 // Initialize the game canvas
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+const renderEngine = new RenderEngine();
+renderEngine.setContext(ctx); 
 
 // Create the player object
 const player = new Player(canvas.width / 2, canvas.height / 2);
@@ -40,9 +43,10 @@ function gameLoop() {
     player.dx = 0;
   }
 
-  // Update and render the player
   player.update();
 
+  renderEngine.render(player);
+  
   requestAnimationFrame(gameLoop);
 }
 
