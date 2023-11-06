@@ -1,4 +1,5 @@
-import { BasicFoe } from "./basic_foe.js";
+import { BasicFoe } from "./basicFoe.js";
+import { Player } from "./player.js";
 import { Player } from "./player.js"
 import { linkDamage } from "./effects/linkDamage.js";
 
@@ -7,7 +8,7 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 // Create the player object
-const player = new Player((canvas.width/2)-10, (canvas.height/2)-10);
+const player = new Player((canvas.width/2), (canvas.height/2));
 
 // Handle user input
 const keys = {};
@@ -46,7 +47,7 @@ function HandleInputs() {
 }
 
 // Create a basic foe
-const foe = new BasicFoe((ctx.canvas.width/2)-15, 185, 2, 30, 30);
+const foe = new BasicFoe((ctx.canvas.width/2), 200, 2, 30, 30, 100, 200);
 
 // Generate 10 random points
 const points = [];
@@ -64,12 +65,13 @@ function gameLoop() {
 
   linkDamage(ctx, points);
 
-  foe.update(ctx);
+  foe.update(ctx, player);
   foe.render(ctx);
-
+  
   player.update(ctx);
   player.render(ctx);
 
+  
   requestAnimationFrame(gameLoop);
 }
 
