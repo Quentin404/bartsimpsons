@@ -51,7 +51,7 @@ function gameLoop() {
 
   HandleInputs();
 
-  player.update();
+  player.update(ctx);
   player.render(ctx);
   
   requestAnimationFrame(gameLoop);
