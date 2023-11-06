@@ -29,5 +29,16 @@ export class Player {
   render(ctx) {
     ctx.fillStyle = "white";
     ctx.fillRect(this.x - (this.width/2), this.y - (this.width/2), this.width, this.height);
+    displayHealth(ctx, this.health);
   }
+
+  hit(damage) {
+    this.health -= damage;
+  }
+}
+
+function displayHealth(ctx, health) {
+  ctx.font = "16px Arial";
+  ctx.fillStyle = "white";
+  ctx.fillText("Health: " + health, 10, 30); // You can adjust the position as needed
 }

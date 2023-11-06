@@ -1,5 +1,6 @@
 export class Projectile {
-  constructor(x, y, speed, direction, height, width) {
+  constructor(x, y, speed, direction, height, width, damage) {
+    // Basics
     this.x = x;
     this.y = y;
     this.speed = speed;
@@ -9,6 +10,8 @@ export class Projectile {
     this.height = height;
     this.width = width;
     this.active = true;
+    // Stats
+    this.damage = damage;
   }
 
   update(ctx) {

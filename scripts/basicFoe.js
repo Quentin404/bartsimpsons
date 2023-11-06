@@ -58,6 +58,8 @@ export class BasicFoe {
       projectile.update(ctx);
       if (!projectile.active || projectileHitsPlayer(player, projectile)) {
         this.projectiles.splice(i, 1);
+        player.hit(projectile.damage);
+        console.log("it doesn't work HERE");
       }
     }
   }
