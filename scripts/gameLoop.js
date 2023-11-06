@@ -27,15 +27,22 @@ function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Update the player's movement
-  if (keys["ArrowUp"]) {
-    player.dy = -player.speed;
-  } else if (keys["ArrowDown"]) {
-    player.dy = player.speed;
-  } else {
+  if (keys["ArrowUp"] && keys["ArrowDown"]) {
     player.dy = 0;
   }
-
-  if (keys["ArrowLeft"]) {
+  else if (keys["ArrowUp"]) {
+    player.dy = -player.speed;
+  } 
+  else if (keys["ArrowDown"]) {
+    player.dy = player.speed;
+  } 
+  else {
+    player.dy = 0;
+  }
+   
+  if (keys["ArrowLeft"] && keys["ArrowRight"]) {
+    player.dx = 0;
+  }else if (keys["ArrowLeft"]) {
     player.dx = -player.speed;
   } else if (keys["ArrowRight"]) {
     player.dx = player.speed;
