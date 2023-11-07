@@ -1,6 +1,20 @@
 import { Projectile } from "./projectile.js";
 import { Angle } from "./utils.js";
 
+var volume = .2;
+var foeFireProjectileSounds = [
+  new Audio("../audio/foeFireProjectile1.mp3"),
+  new Audio("../audio/foeFireProjectile2.mp3"),
+  new Audio("../audio/foeFireProjectile3.mp3")
+];
+foeFireProjectileSounds.forEach(e => { e.volume = volume; });
+var playerHitSounds = [
+  new Audio("../audio/playerHit1.mp3"),
+  new Audio("../audio/playerHit2.mp3"),
+  new Audio("../audio/playerHit3.mp3")
+];
+playerHitSounds.forEach(e => { e.volume = volume });
+
 export class BasicFoe {
   constructor(x, y, speed, height, width, fireRate, moveRate) {
     // Basics
@@ -11,12 +25,13 @@ export class BasicFoe {
     this.dy = 0;
     this.height = height;
     this.width = width;
-    
+
     // Firing
     this.fireRate = fireRate;
     this.projectiles = [];
     this.lastFireTime = 0;
     this.firingAngle = 90;
+    this.projectileDamage = 50;
 
     // Movements
     this.moveRate = moveRate;
@@ -36,36 +51,50 @@ export class BasicFoe {
     this.y += this.dy;
 
     // Handle canvas limits
-    if (this.x < 0 + this.width/2)
-      this.x = 0 + this.width/2;
-    else if (this.x > ctx.canvas.width - this.width/2)
-      this.x = ctx.canvas.width - this.width/2;
-    if (this.y < 0 + this.height/2)
-      this.y = 0 + this.height/2;
-    else if (this.y > ctx.canvas.height - this.height/2)
-      this.y = ctx.canvas.height - this.height/2;
+    if (this.x < 0 + this.width / 2)
+      this.x = 0 + this.width / 2;
+    else if (this.x > ctx.canvas.width - this.width / 2)
+      this.x = ctx.canvas.width - this.width / 2;
+    if (this.y < 0 + this.height / 2)
+      this.y = 0 + this.height / 2;
+    else if (this.y > ctx.canvas.height - this.height / 2)
+      this.y = ctx.canvas.height - this.height / 2;
 
     // Fire projectiles
     if (currentTime - this.lastFireTime >= this.fireRate) {
-      this.fireProjectile(Angle(this.firingAngle));
+      this.fireProjectile(Angle(this.firingAngle), this.projectileDamage);
       this.firingAngle += 15;
       this.lastFireTime = currentTime;
+
+      var randomSound = Math.floor(Math.random() * 2);
+      foeFireProjectileSounds[randomSound].currentTime = 0;
+      foeFireProjectileSounds[randomSound].play();
     }
 
     // Update and render projectiles
     for (let i = this.projectiles.length - 1; i >= 0; i--) {
       const projectile = this.projectiles[i];
       projectile.update(ctx);
-      if (!projectile.active || projectileHitsPlayer(player, projectile)) {
-        this.projectiles.splice(i, 1);
+
+      if (projectileHitsPlayer(player, projectile)) {
         player.hit(projectile.damage);
-        console.log("it doesn't work HERE");
+
+        var randomSound = Math.floor(Math.random() * 2);
+        playerHitSounds[randomSound].currentTime = 0;
+        playerHitSounds[randomSound].play();
+
+        this.projectiles.splice(i, 1);
+      } else if (!projectile.active) {
+        this.projectiles.splice(i, 1);
       }
+    }
+    for (let i = this.projectiles.length - 1; i >= 0; i--) {
+      const projectile = this.projectiles[i];
     }
   }
 
   fireProjectile(angle) {
-    const projectile = new Projectile(this.x, this.y, 5, angle, 5, 5);
+    const projectile = new Projectile(this.x, this.y, 5, angle, 5, 5, this.projectileDamage);
     this.projectiles.push(projectile);
   }
 
