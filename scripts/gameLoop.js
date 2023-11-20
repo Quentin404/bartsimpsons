@@ -57,7 +57,7 @@ const foe = new BasicFoe((ctx.canvas.width / 2), 200, 2, 30, 30, 100, 200);
 // Generate 10 random points
 const foes = [];
 for (let i = 0; i < 10; i++) {
-  const newFoe = new BasicFoe(Math.random() * canvas.width, Math.random() * canvas.height, 2, 30, 30)
+  const newFoe = new BasicFoe(Math.random() * canvas.width, Math.random() * canvas.height, 2, 30, 30, 100, 200)
   foes.push(newFoe);
 }
 
@@ -83,7 +83,7 @@ function gameLoop() {
     player.render(ctx);
 
     for (let i = 0; i < foes.length; i++) {
-      foes[i].update(ctx);
+      foes[i].update(ctx, player);
       foes[i].render(ctx);
     }
   }
