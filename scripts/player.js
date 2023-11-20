@@ -35,6 +35,10 @@ export class Player {
   hit(damage) {
     this.health -= damage;
   }
+
+  isDead() {
+    return this.health < 0;
+  }
 }
 
 function displayHealth(ctx, health) {

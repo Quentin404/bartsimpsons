@@ -1,6 +1,7 @@
 import { BasicFoe } from "./basicFoe.js";
 import { Player } from "./player.js"
 import { linkDamage } from "./effects/linkDamage.js";
+import { CustomText } from "./utils.js";
 
 // Initialize the game canvas
 const canvas = document.getElementById("gameCanvas");
@@ -16,13 +17,11 @@ var delta;
 // Gamemodes
 const Gamemode = {
   menu: 0,
-  game: 1
+  game: 1,
+  dead: 2
 }
 
 let currentGamemode = Gamemode.menu;
-
-// Create the player object
-const player = new Player((canvas.width / 2), (canvas.height / 2));
 
 // Handle user input
 const keys = {};
@@ -60,48 +59,50 @@ function HandleGameInputs() {
   }
 }
 
-// Create a basic foe
-const foe = new BasicFoe((ctx.canvas.width / 2), 200, 2, 30, 30, 100, 200);
+let player;
+let foe;
+let foes;
 
-// Generate 10 random points
-const foes = [];
-for (let i = 0; i < 10; i++) {
-  const newFoe = new BasicFoe(Math.random() * canvas.width, Math.random() * canvas.height, 2, 30, 30, 100, 200)
-  foes.push(newFoe);
+function InitGame() {
+  // Create a basic foe
+  foe = new BasicFoe((ctx.canvas.width / 2), 200, 2, 30, 30, 100, 200);
+  
+  // Generate 10 random points
+  foes = [];
+  for (let i = 0; i < 10; i++) {
+    const newFoe = new BasicFoe(Math.random() * canvas.width, Math.random() * canvas.height, 2, 30, 30, 100, 200)
+    foes.push(newFoe);
+  }
+  
+  // Create the player object
+  player = new Player((canvas.width / 2), (canvas.height / 2));
 }
 
 // Game loop
 function gameLoop() {
-  if (currentGamemode == Gamemode.menu) {
-    requestAnimationFrame(gameLoop);
-    now = Date.now();
-    delta = now - then;
-    if (delta > interval) {
-      then = now - (delta % interval);
+  requestAnimationFrame(gameLoop);
+  now = Date.now();
+  delta = now - then;
+  
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  if (delta > interval) {
+    then = now - (delta % interval);
 
-      ctx.font = "24px Arial";
-      ctx.fillStyle = "white";
-      ctx.textAlign = "center";
-      ctx.fillText("Appuyez sur entrée pour lancer le jeu", ctx.canvas.width/2, ctx.canvas.height/2);
+    if (currentGamemode == Gamemode.menu) {
+      CustomText(ctx, "Appuyez sur entrée pour lancer le jeu", 24, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2)
 
       if (keys["Enter"]) {
         currentGamemode = Gamemode.game;
         console.log("changing gamemode to: " + currentGamemode);
       }
+      
     }
-
-  }
-  else if (currentGamemode == Gamemode.game) {
-    requestAnimationFrame(gameLoop);
-    now = Date.now();
-    delta = now - then;
-
-    if (delta > interval) {
-      then = now - (delta % interval);
-
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    else if (currentGamemode == Gamemode.game) {
+      if (player.isDead()) {
+        currentGamemode = Gamemode.dead;
+        return;
+      }
 
       HandleGameInputs();
 
@@ -117,9 +118,20 @@ function gameLoop() {
         foes[i].update(ctx, player);
         foes[i].render(ctx);
       }
+    } else if (currentGamemode == Gamemode.dead) {
+      CustomText(ctx, "Vous êtes mort", 24, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2);
+      CustomText(ctx, "Appuyez sur entrée pour recommencer", 16, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2 + 30);
+
+      if (keys["Enter"]) {
+        currentGamemode = Gamemode.game;
+        InitGame();
+        console.log("changing gamemode to: " + currentGamemode);
+      }
     }
   }
 }
 
+
+InitGame();
 // Start the game loop
 gameLoop();
