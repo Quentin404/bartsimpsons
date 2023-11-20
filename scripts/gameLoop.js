@@ -81,6 +81,11 @@ function gameLoop() {
 
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
+      ctx.font = "24px Arial";
+      ctx.fillStyle = "white";
+      ctx.textAlign = "center";
+      ctx.fillText("Appuyez sur entrée pour lancer le jeu", ctx.canvas.width/2, ctx.canvas.height/2);
+
       if (keys["Enter"]) {
         currentGamemode = Gamemode.game;
         console.log("changing gamemode to: " + currentGamemode);

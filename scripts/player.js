@@ -40,5 +40,6 @@ export class Player {
 function displayHealth(ctx, health) {
   ctx.font = "16px Arial";
   ctx.fillStyle = "white";
+  ctx.textAlign = "left";
   ctx.fillText("Health: " + health, 10, 30); // You can adjust the position as needed
 }
