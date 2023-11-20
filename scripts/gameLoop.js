@@ -5,12 +5,21 @@ import { linkDamage } from "./effects/linkDamage.js";
 // Initialize the game canvas
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+
 // FPS Throttle
 var fps = 60;
 var now;
 var then = Date.now();
 var interval = 1000 / fps;
 var delta;
+
+// Gamemodes
+const Gamemode = {
+  menu: 0,
+  game: 1
+}
+
+let currentGamemode = Gamemode.menu;
 
 // Create the player object
 const player = new Player((canvas.width / 2), (canvas.height / 2));
@@ -26,25 +35,25 @@ window.addEventListener("keyup", (event) => {
   keys[event.key] = false;
 });
 
-function HandleInputs() {
-  if (keys["ArrowUp"] && keys["ArrowDown"]) {
+function HandleGameInputs() {
+  if (keys["z"] && keys["s"]) {
     player.dy = 0;
   }
-  else if (keys["ArrowUp"]) {
+  else if (keys["z"]) {
     player.dy = -player.speed;
   }
-  else if (keys["ArrowDown"]) {
+  else if (keys["s"]) {
     player.dy = player.speed;
   }
   else {
     player.dy = 0;
   }
 
-  if (keys["ArrowLeft"] && keys["ArrowRight"]) {
+  if (keys["q"] && keys["d"]) {
     player.dx = 0;
-  } else if (keys["ArrowLeft"]) {
+  } else if (keys["q"]) {
     player.dx = -player.speed;
-  } else if (keys["ArrowRight"]) {
+  } else if (keys["d"]) {
     player.dx = player.speed;
   } else {
     player.dx = 0;
@@ -63,28 +72,46 @@ for (let i = 0; i < 10; i++) {
 
 // Game loop
 function gameLoop() {
-  requestAnimationFrame(gameLoop);
-  now = Date.now();
-  delta = now - then;
+  if (currentGamemode == Gamemode.menu) {
+    requestAnimationFrame(gameLoop);
+    now = Date.now();
+    delta = now - then;
+    if (delta > interval) {
+      then = now - (delta % interval);
 
-  if (delta > interval) {
-    then = now - (delta % interval);
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      if (keys["Enter"]) {
+        currentGamemode = Gamemode.game;
+        console.log("changing gamemode to: " + currentGamemode);
+      }
+    }
 
-    HandleInputs();
+  }
+  else if (currentGamemode == Gamemode.game) {
+    requestAnimationFrame(gameLoop);
+    now = Date.now();
+    delta = now - then;
 
-    linkDamage(ctx, foes, 20);
+    if (delta > interval) {
+      then = now - (delta % interval);
 
-    foe.update(ctx, player);
-    foe.render(ctx);
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    player.update(ctx);
-    player.render(ctx);
+      HandleGameInputs();
 
-    for (let i = 0; i < foes.length; i++) {
-      foes[i].update(ctx, player);
-      foes[i].render(ctx);
+      linkDamage(ctx, foes, 20);
+
+      foe.update(ctx, player);
+      foe.render(ctx);
+
+      player.update(ctx);
+      player.render(ctx);
+
+      for (let i = 0; i < foes.length; i++) {
+        foes[i].update(ctx, player);
+        foes[i].render(ctx);
+      }
     }
   }
 }
