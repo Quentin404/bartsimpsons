@@ -103,7 +103,7 @@ function gameLoop() {
       if (player.isDead()) {
         currentGamemode = Gamemode.dead;
         return;
-      } else if (foes.length < 2){
+      } else if (foes.length < 1){
         currentGamemode = Gamemode.end;
         return;
       }
