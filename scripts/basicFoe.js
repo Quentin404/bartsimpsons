@@ -33,6 +33,9 @@ export class BasicFoe {
     this.firingAngle = 90;
     this.projectileDamage = 50;
 
+    // Stats
+    this.health = 100;
+
     // Movements
     this.moveRate = moveRate;
     this.lastMoveTime = 0;
@@ -51,12 +54,12 @@ export class BasicFoe {
     this.y += this.dy;
 
     // Handle canvas limits
-    if (this.x < 0 + this.width / 2)
-      this.x = 0 + this.width / 2;
+    if (this.x < this.width / 2)
+      this.x = this.width / 2;
     else if (this.x > ctx.canvas.width - this.width / 2)
       this.x = ctx.canvas.width - this.width / 2;
-    if (this.y < 0 + this.height / 2)
-      this.y = 0 + this.height / 2;
+    if (this.y < this.height / 2)
+      this.y = this.height / 2;
     else if (this.y > ctx.canvas.height - this.height / 2)
       this.y = ctx.canvas.height - this.height / 2;
 
@@ -94,7 +97,7 @@ export class BasicFoe {
   }
 
   fireProjectile(angle) {
-    const projectile = new Projectile(this.x, this.y, 5, angle, 5, 5, this.projectileDamage);
+    const projectile = new Projectile(this.x, this.y, 5, angle, 5, 5, this.projectileDamage, "player");
     this.projectiles.push(projectile);
   }
 
@@ -111,6 +114,14 @@ export class BasicFoe {
     this.projectiles.forEach((projectile) => {
       projectile.render(ctx);
     });
+  }
+
+  hit(damage) {
+    this.health -= damage;
+  }
+
+  isDead() {
+    return this.health < 0;
   }
 }
 

@@ -18,7 +18,8 @@ var delta;
 const Gamemode = {
   menu: 0,
   game: 1,
-  dead: 2
+  dead: 2,
+  end: 3
 }
 
 let currentGamemode = Gamemode.menu;
@@ -89,7 +90,7 @@ function gameLoop() {
   if (delta > interval) {
     then = now - (delta % interval);
 
-    if (currentGamemode == Gamemode.menu) {
+    if (currentGamemode === Gamemode.menu) {
       CustomText(ctx, "Appuyez sur entrée pour lancer le jeu", 24, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2)
 
       if (keys["Enter"]) {
@@ -98,9 +99,12 @@ function gameLoop() {
       }
       
     }
-    else if (currentGamemode == Gamemode.game) {
+    else if (currentGamemode === Gamemode.game) {
       if (player.isDead()) {
         currentGamemode = Gamemode.dead;
+        return;
+      } else if (foes.length < 2){
+        currentGamemode = Gamemode.end;
         return;
       }
 
@@ -108,18 +112,24 @@ function gameLoop() {
 
       linkDamage(ctx, foes, 20);
 
-      foe.update(ctx, player);
-      foe.render(ctx);
-
-      player.update(ctx);
+      player.update(ctx, foes);
       player.render(ctx);
 
       for (let i = 0; i < foes.length; i++) {
         foes[i].update(ctx, player);
         foes[i].render(ctx);
       }
-    } else if (currentGamemode == Gamemode.dead) {
+    } else if (currentGamemode === Gamemode.dead) {
       CustomText(ctx, "Vous êtes mort", 24, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2);
+      CustomText(ctx, "Appuyez sur entrée pour recommencer", 16, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2 + 30);
+
+      if (keys["Enter"]) {
+        currentGamemode = Gamemode.game;
+        InitGame();
+        console.log("changing gamemode to: " + currentGamemode);
+      }
+    } else if (currentGamemode === Gamemode.end) {
+      CustomText(ctx, "Victoire !", 24, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2);
       CustomText(ctx, "Appuyez sur entrée pour recommencer", 16, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2 + 30);
 
       if (keys["Enter"]) {

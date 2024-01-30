@@ -1,6 +1,10 @@
 import { solveTSP } from "../algorithms/travelingSalesman.js";
 
 function linkDamage(ctx, points, maxLinks) {
+
+    if (points.length < 2){
+        return;
+    }
     // Use the TSP algorithm to find the optimal path
     const tspPath = solveTSP(points);
 
