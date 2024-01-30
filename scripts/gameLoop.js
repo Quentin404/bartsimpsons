@@ -66,6 +66,9 @@ let foeGenerator;
 let bestScore = 0;
 let record = "";
 
+const backgroundImage = new Image();
+backgroundImage.src = "../images/bg.png";
+
 function InitGame() {
   
   // Generate foes
@@ -86,6 +89,8 @@ function gameLoop() {
 
   if (delta > interval) {
     then = now - (delta % interval);
+
+    ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
     if (currentGamemode === Gamemode.menu) {
       CustomText(ctx, "Appuyez sur entrée pour lancer le jeu", 24, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2)
@@ -156,7 +161,7 @@ function gameLoop() {
   }
 }
 
-
-InitGame();
-// Start the game loop
-gameLoop();
+backgroundImage.onload = function() {
+  InitGame();
+  gameLoop();
+};
