@@ -35,6 +35,9 @@ export class BasicFoe {
 
     // Stats
     this.health = 100;
+    this.hitsToPlayer = 0;
+    this.survivalTime = 0;
+    this.performance = 0;
 
     // Movements
     this.moveRate = moveRate;
@@ -43,6 +46,7 @@ export class BasicFoe {
 
   update(ctx, player) {
     const currentTime = performance.now();
+    this.survivalTime += 1;
 
     // Movements
     if (currentTime - this.lastMoveTime >= this.moveRate) {
@@ -80,6 +84,7 @@ export class BasicFoe {
       projectile.update(ctx);
 
       if (projectileHitsPlayer(player, projectile)) {
+        this.hitsToPlayer += 1;
         player.hit(projectile.damage);
 
         var randomSound = Math.floor(Math.random() * 2);

@@ -1,5 +1,5 @@
-import { BasicFoe } from "./basicFoe.js";
 import { Player } from "./player.js"
+import { FoeGenerator } from "./foeGenerator.js";
 import { linkDamage } from "./effects/linkDamage.js";
 import { CustomText } from "./utils.js";
 
@@ -61,22 +61,16 @@ function HandleGameInputs() {
 }
 
 let player;
-let foe;
-let foes;
-let defeatedFoes = 0;
-let bestDefeatedFoes = 0;
 const foesNumber = 6;
+let foeGenerator;
+let bestScore = 0;
+let record = "";
 
 function InitGame() {
-  // Create a basic foe
-  foe = new BasicFoe((ctx.canvas.width / 2), 200, 2, 30, 30, 100, 200);
   
-  // Generate 10 random foes
-  foes = [];
-  for (let i = 0; i < foesNumber; i++) {
-    const newFoe = new BasicFoe(Math.random() * canvas.width, Math.random() * canvas.height, 2, 30, 30, 100, 200)
-    foes.push(newFoe);
-  }
+  // Generate foes
+  foeGenerator = new FoeGenerator(foesNumber);
+  foeGenerator.initializePopulation(ctx);
   
   // Create the player object
   player = new Player((canvas.width / 2), (canvas.height / 2));
@@ -104,52 +98,46 @@ function gameLoop() {
     }
     else if (currentGamemode === Gamemode.game) {
       if (player.isDead()) {
+        if (foeGenerator.playerScore > bestScore){
+          bestScore = foeGenerator.playerScore;
+          record = " - Nouveau record !"
+        } else {
+          record = "";
+        }
         currentGamemode = Gamemode.dead;
         return;
-      } else if (foes.length < 1){
+      } else if (foeGenerator.foes.length < 1){
         currentGamemode = Gamemode.end;
         return;
-      }
-
-      // Check the numebr of ennemies and add one if any are missing
-      while (foes.length < foesNumber) {
-        defeatedFoes += 1;
-        const newFoe = new BasicFoe(Math.random() * canvas.width, Math.random() * canvas.height, 2, 30, 30, 100, 200);
-        foes.push(newFoe);
       }
 
       // Display score
       ctx.font = "16px Arial";
       ctx.fillStyle = "white";
       ctx.textAlign = "right";
-      ctx.fillText("Score: " + defeatedFoes, 400, 30); // You can adjust the position as needed
-      ctx.fillText("Best: " + bestDefeatedFoes, 400, 55); // You can adjust the position as needed
+      ctx.fillText("Score: " + foeGenerator.playerScore, 400, 30); // You can adjust the position as needed
+      ctx.fillText("Best: " + bestScore, 400, 55); // You can adjust the position as needed
 
       HandleGameInputs();
 
-      linkDamage(ctx, foes, 20);
+      linkDamage(ctx, foeGenerator.foes, 20);
 
-      player.update(ctx, foes);
+      player.update(ctx, foeGenerator.foes);
       player.render(ctx);
 
-      for (let i = 0; i < foes.length; i++) {
-        foes[i].update(ctx, player);
-        foes[i].render(ctx);
+      foeGenerator.update(ctx, player);
+
+      for (let i = 0; i < foeGenerator.foes.length; i++) {
+        foeGenerator.foes[i].render(ctx);
       }
+
     } else if (currentGamemode === Gamemode.dead) {
-      let record;
-      if (defeatedFoes > bestDefeatedFoes){
-        bestDefeatedFoes = defeatedFoes;
-        record = " - Nouveau record !"
-      } else {
-        record = "";
-      }
       CustomText(ctx, "Vous êtes mort", 24, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2);
-      CustomText(ctx, "Score : " + defeatedFoes + record, 16, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2 + 30);
+      CustomText(ctx, "Score : " + foeGenerator.playerScore + record, 16, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2 + 30);
       CustomText(ctx, "Appuyez sur entrée pour recommencer", 16, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2 + 60);
 
       if (keys["Enter"]) {
-        defeatedFoes = 0;
+        foeGenerator.playerScore = 0;
         currentGamemode = Gamemode.game;
         InitGame();
         console.log("changing gamemode to: " + currentGamemode);
@@ -159,7 +147,7 @@ function gameLoop() {
       CustomText(ctx, "Appuyez sur entrée pour recommencer", 16, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2 + 30);
 
       if (keys["Enter"]) {
-        defeatedFoes = 0;
+        foeGenerator.playerScore = 0;
         currentGamemode = Gamemode.game;
         InitGame();
         console.log("changing gamemode to: " + currentGamemode);

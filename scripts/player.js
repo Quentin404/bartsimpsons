@@ -59,11 +59,6 @@ export class Player {
           // Remove the projectile
           this.projectiles.splice(i, 1);
 
-          // Check if the foe is defeated
-          if (foe.isDead()) {
-            // Remove the defeated foe from the foes array
-            foes.splice(j, 1);
-          }
           break;
         } else if (!projectile.active) {
           this.projectiles.splice(i, 1);
@@ -96,7 +91,7 @@ export class Player {
   }
 
   isDead() {
-    return this.health < 0;
+    return this.health <= 0;
   }
 }
 

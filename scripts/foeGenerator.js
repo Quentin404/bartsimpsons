@@ -1,0 +1,98 @@
+import {BasicFoe} from "./basicFoe.js";
+
+export class FoeGenerator {
+    constructor(populationSize) {
+        this.populationSize = populationSize;
+        this.foes = []; // The desired number of foes which is meant to be constant
+        this.deadFoes = [];
+        this.playerScore = 0;
+    }
+
+    initializePopulation(ctx) {
+        for (let i = 0; i < this.populationSize; i++) {
+            const foe = new BasicFoe(
+                Math.random() * ctx.canvas.width, // random x position
+                Math.random() * ctx.canvas.height, // random y position
+                Math.random() * 4 + 1, // random movement speed
+                30, // foe height
+                30, // foe width
+                Math.random() * 200 + 40, // random fire rate
+                200 // move rate
+            );
+
+            this.foes.push(foe);
+        }
+    }
+
+    update(ctx, player){
+        this.evaluatePopulation();
+        for (let i = 0; i < this.foes.length; i++){
+            const foe = this.foes[i];
+            foe.update(ctx, player);
+            if (foe.isDead()){
+                this.playerScore += 1;
+                this.deadFoes.push(foe);
+                this.foes.splice(i, 1);
+            }
+        }
+        if (this.foes.length < this.populationSize){
+            this.addFoe(ctx);
+        }
+    }
+
+    addFoe(ctx){
+        const parents = this.selectParents();
+
+        for (let i = this.foes.length; i < this.populationSize; i++) {
+            const parent1 = parents[Math.floor(Math.random() * parents.length)];
+            const parent2 = parents[Math.floor(Math.random() * parents.length)];
+
+            const child = this.crossover(ctx, parent1, parent2);
+
+            this.mutate(child);
+
+            this.foes.push(child);
+        }
+    }
+
+    evaluatePopulation() {
+        for (let i = 0; i < this.foes.length; i++) {
+            const foe = this.foes[i];
+            foe.performance = foe.hitsToPlayer * 1000 + foe.survivalTime * 2;
+        }
+    }
+
+    // Selecting the best foes for reproduction among both living and dead
+    selectParents() {
+        const allFoes = this.foes.concat(this.deadFoes); // Combine dead and living foes to get the very best
+
+        allFoes.sort((a, b) => b.performance - a.performance); // Sort by performance
+
+        const numParents = Math.floor(this.populationSize / 4); // Select the best 25%
+        return allFoes.slice(0, numParents);
+    }
+
+    // Crossing foes traits to optimize performance
+    crossover(ctx, parent1, parent2) {
+        return new BasicFoe(
+            Math.random() * ctx.canvas.width, // random x position
+            Math.random() * ctx.canvas.height, // random y position
+            (parent1.speed + parent2.speed) / 2, // Average speed
+            parent1.height,
+            parent1.width,
+            (parent1.fireRate + parent2.fireRate) / 2, // Average fire rate
+            parent1.moveRate
+        );
+    }
+
+    // Apply mutations to foe
+    mutate(foe) {
+        const mutationRate = 0.1;
+        foe.x += (Math.random() - 0.5) * mutationRate;
+        foe.y += (Math.random() - 0.5) * mutationRate;
+        foe.speed += (Math.random() - 0.5) * mutationRate;
+        foe.fireRate += (Math.random() - 0.5) * mutationRate;
+        foe.speed = Math.max(1, foe.speed);
+        foe.fireRate = Math.max(40, foe.fireRate);
+    }
+}
