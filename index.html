@@ -5,6 +5,7 @@
   <title>Spaceship Game</title>
   <link rel="stylesheet" type="text/css" href="styles.css">
   <script type="module" src="scripts/gameLoop.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.7/p5.min.js"></script>
 </head>
 
 <body>
@@ -12,5 +13,121 @@
     <canvas id="gameCanvas" width="420" height="680"></canvas>
   </div>
 </body>
+
+<script>
+  class Veins {
+    constructor(len, originX, originY, originAngle) {
+        // Paramètres
+        this.len = len;
+        this.originX = originX;
+        this.originY = originY;
+        this.originAngle = originAngle;
+
+        // Initialisation
+        this.sentence = "X";
+        this.iteration = 0;
+
+        this.rules = {
+            "F": "FF",
+            "X": "F[-FF-X][+XFF-X[+FFFX]]"
+        };
+
+        this.maxAngle = 35;
+        this.minAngle = 25;
+        this.setAngle();
+    }
+
+    setAngle() {
+        let randomSignValue = random();
+        let angle = radians(random(this.minAngle, this.maxAngle));
+        if (randomSignValue < 0.5)
+            angle = -angle;
+        this.angle = angle;
+    }
+
+    // Evolve est la fonction principale qui fait passer l'arbre d'une étape à la suivante
+    // en faisant évoluer l'arbre en lui-même et ses racines (que des racines pour les veines)
+    evolve() {
+        if (this.iteration < 6) {
+            this.iteration++;
+            this.generate();
+        }
+        else {
+            this.turtle(this.originX, originY);
+        }
+    }
+
+    // Generate génère la prochaine étape de l'arbre ou des racines en fonction de son état précédent et de sa règle
+    generate() {
+        this.len *= 0.5;
+        let nextSentence = "";
+        for (let i = 0; i < this.sentence.length; i++) {
+            let current = this.sentence.charAt(i);
+            let found = false;
+            for (let j in this.rules) {
+                if (current == j) {
+                    found = true;
+                    nextSentence += this.rules[j];
+                }
+            }
+            if (!found) {
+                nextSentence += current;
+            }
+        }
+        this.sentence = nextSentence;
+        this.turtle(this.originX, this.originY, this.originAngle);
+    }
+
+    // Turtle est la fonction qui dessine l'état de l'arbre ou des racines
+    turtle(originX, originY, originAngle) {
+        strokeWeight(1);
+        stroke(51, 102, 0);
+
+        resetMatrix();
+        translate(originX, originY);
+        scale(1);
+        rotate(radians(originAngle));
+
+        stroke(255, 0, 0);
+        strokeWeight(3);
+
+        for (let i = 0; i < this.sentence.length; i++) {
+            let current = this.sentence.charAt(i);
+            if (current == "F") {
+                line(0, 0, 0, -this.len);
+                translate(0, -this.len);
+            } else if (current == "+") {
+                rotate(this.angle);
+            } else if (current == "-") {
+                rotate(-this.angle);
+            } else if (current == "[") {
+                push();
+            } else if (current == "]") {
+                pop();
+            }
+        }
+    }
+  }
+
+  function setup() {
+    // Create veins
+    let p5canvas = createCanvas(420, 680);
+    p5canvas.parent('game-container');
+
+    let veinsArray = [];
+    veinsArray.push(new Veins(50, width / 2, height, 0));
+    veinsArray.push(new Veins(50, width, height, -45));
+    veinsArray.push(new Veins(50, 0, height, 45));
+    
+    veinsArray.push(new Veins(50, width / 2, 0, 180));
+    veinsArray.push(new Veins(50, width, 100, 215));
+    veinsArray.push(new Veins(50, 0, 100, 135));
+
+    veinsArray.forEach(e => {
+      e.evolve();
+      e.evolve();
+    });
+  }
+</script>
 
 </html>

@@ -11,3 +11,9 @@ body {
   position: relative;
   border: solid 1px #FFF;
 }
+
+#defaultCanvas0, #p5Canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
