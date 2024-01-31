@@ -168,14 +168,13 @@ export class Player {
     if (superAvailableSoundPlayed) {
       ctx.textAlign = "center";
       ctx.font = '28px Bourgeois Bold Condensed';
-      ctx.fillText("PRESS [F] FOR SUPERFIRE", ctx.canvas.width / 2, ctx.canvas.height - 80);
+      ctx.fillText("[F] Superfire", ctx.canvas.width / 2, ctx.canvas.height - 80);
     }
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.rotate(this.firingAngle + Angle(90));
     ctx.drawImage(this.playerImage, -this.width / 2, -this.height / 2, this.width, this.height);
     ctx.restore();
-    displayHealth(ctx, this.health);
 
     // Render projectiles
     this.projectiles.forEach((projectile) => {
@@ -185,7 +184,7 @@ export class Player {
 
   fireProjectile(superFire) {
     var speed = superFire ? 20 : 10;
-    var size = superFire ? 20 : 5;
+    var size = superFire ? 20 : 8;
 
     const playerProjectile = new Projectile(this.x, this.y, speed, this.firingAngle, size, size, this.projectileDamage, "foe", superFire);
     this.projectiles.push(playerProjectile);
@@ -206,13 +205,7 @@ export class Player {
   loadPlayerImage() {
     this.playerImage.src = "../images/sprites/sprite-player.png";
   }
-}
 
-function displayHealth(ctx, health) {
-  ctx.font = "24px Bourgeois Bold Condensed";
-  ctx.fillStyle = "white";
-  ctx.textAlign = "left";
-  ctx.fillText("HP " + health, 10, 30); // You can adjust the position as needed
 }
 
 function projectileHitsFoe(foe, projectile) {

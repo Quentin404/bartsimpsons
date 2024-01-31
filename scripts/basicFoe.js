@@ -116,7 +116,7 @@ export class BasicFoe {
   }
 
   fireProjectile(angle) {
-    const projectile = new Projectile(this.x, this.y, 3, angle, 5, 5, this.projectileDamage, "player");
+    const projectile = new Projectile(this.x, this.y, 3, angle, 5, 5, this.projectileDamage, "player", false);
     this.projectiles.push(projectile);
   }
 
@@ -126,15 +126,6 @@ export class BasicFoe {
   }
 
   render(ctx) {
-    if (this.currentFiringPattern === 0){
-      ctx.fillStyle = "red";
-    } else if (this.currentFiringPattern === 1) {
-      ctx.fillStyle = "blue";
-    } else {
-      ctx.fillStyle = "green";
-    }
-    ctx.fillRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
-
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.rotate(Angle(90));

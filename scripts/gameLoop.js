@@ -149,13 +149,6 @@ function gameLoop() {
         return;
       }
 
-      // Display score
-      ctx.font = "24px Bourgeois Bold Condensed";
-      ctx.fillStyle = "white";
-      ctx.textAlign = "right";
-      ctx.fillText("Score: " + foeGenerator.playerScore, 400, 30);
-      ctx.fillText("Best: " + bestScore, 400, 55);
-
       HandleGameInputs();
 
       player.update(ctx, foeGenerator.foes, keys);
@@ -166,6 +159,19 @@ function gameLoop() {
       for (let i = 0; i < foeGenerator.foes.length; i++) {
         foeGenerator.foes[i].render(ctx);
       }
+
+      // Display score
+      ctx.font = "24px Bourgeois Bold Condensed";
+      ctx.fillStyle = "white";
+      ctx.textAlign = "right";
+      ctx.fillText("Score: " + foeGenerator.playerScore, 400, 30);
+      ctx.fillText("Best: " + bestScore, 400, 55);
+
+
+      ctx.font = "24px Bourgeois Bold Condensed";
+      ctx.fillStyle = "white";
+      ctx.textAlign = "left";
+      ctx.fillText("HP " + player.health, 10, 30);
 
     } else if (currentGamemode === Gamemode.dead) {
       CustomText(ctx, "K.I.A", bigTextSize, "Bourgeois Bold Condensed", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2);

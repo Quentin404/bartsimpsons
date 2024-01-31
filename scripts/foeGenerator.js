@@ -27,7 +27,7 @@ export class FoeGenerator {
                 30, // foe width
                 randomShootingPattern,
                 Math.floor(Math.random() * 100) + 1, // random accuracy between 1 and 100
-                Math.random() * 200 + 40, // random fire rate between 40 and 240
+                Math.random() * 500 + 150,
                 200 // move rate
             );
 
@@ -112,9 +112,8 @@ export class FoeGenerator {
         const mutationRate = 2;
         foe.speed += (Math.random() - 0.5) * mutationRate;
         foe.accuracy += (Math.random() - 0.5) * mutationRate * 5;
-        foe.fireRate += (Math.random() - 0.5) * mutationRate * 10;
+        foe.fireRate += (Math.random() - 0.5) * mutationRate * 100;
         foe.speed = Math.max(1, foe.speed);
-        foe.fireRate = Math.max(40, foe.fireRate);
 
         if (Math.random() < 0.15) { // 15% chance of a random pattern
             foe.shootingPattern = Math.floor(Math.random() * 3); // 0, 1 or 2
