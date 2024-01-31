@@ -27,6 +27,21 @@ let currentGamemode = Gamemode.menu;
 var playerDeadSound = new Audio("../audio/playerDead.mp3");
 playerDeadSound.volume = .2;
 
+var musicDeadVolume = .2;
+var musicDead = new Audio("../audio/music_dead.wav");
+musicDead.volume = musicDeadVolume;
+musicDead.loop = true;
+
+var musicVolume = .3;
+var music = new Audio("../audio/music_full.wav");
+music.volume = 0;
+music.loop = true;
+
+function SwitchMusic(dead) {
+  music.volume = dead ? 0 : musicVolume;
+  musicDead.volume = dead ? musicDeadVolume : 0;
+}
+
 // Handle user input
 const keys = {};
 
@@ -73,6 +88,9 @@ const backgroundImage = new Image();
 backgroundImage.src = "../images/bg.png";
 
 function InitGame() {
+  // Play music
+  music.play();
+  musicDead.play();
 
   // Generate foes
   foeGenerator = new FoeGenerator(foesNumber);
@@ -88,7 +106,6 @@ function gameLoop() {
   now = Date.now();
   delta = now - then;
 
-
   if (delta > interval) {
     then = now - (delta % interval);
 
@@ -102,6 +119,7 @@ function gameLoop() {
       if (keys["Enter"]) {
         currentGamemode = Gamemode.game;
         console.log("changing gamemode to: " + currentGamemode);
+        SwitchMusic(false);
       }
 
     }
@@ -144,11 +162,14 @@ function gameLoop() {
       }
 
     } else if (currentGamemode === Gamemode.dead) {
+      SwitchMusic(true);
+
       CustomText(ctx, "Vous êtes mort", 24, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2);
       CustomText(ctx, "Score : " + foeGenerator.playerScore + record, 16, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2 + 30);
       CustomText(ctx, "Appuyez sur entrée pour recommencer", 16, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2 + 60);
 
       if (keys["Enter"]) {
+        SwitchMusic(false);
         foeGenerator.playerScore = 0;
         currentGamemode = Gamemode.game;
         InitGame();
@@ -164,6 +185,18 @@ function gameLoop() {
         InitGame();
         console.log("changing gamemode to: " + currentGamemode);
       }
+    }
+  }
+
+  if (keys["m"]) {
+    music.volume = 0;
+    musicDead.volume = 0;
+  }
+  if (keys["p"]) {
+    if (currentGamemode == Gamemode.game) {
+      music.volume = musicVolume;
+    } else {
+      musicDead.volume = musicDeadVolume;
     }
   }
 }
