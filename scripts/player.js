@@ -1,4 +1,5 @@
 import { Projectile } from "./projectile.js";
+import { linkDamage } from "./effects/linkDamage.js";
 
 var volume = .2;
 var playerFireProjectileSounds = [
@@ -13,6 +14,17 @@ var playerHitSounds = [
   new Audio("../audio/playerHit3.mp3")
 ];
 playerHitSounds.forEach(e => { e.volume = volume });
+
+var superShotSound = new Audio("../audio/superShot.mp3");
+superShotSound.volume = .5;
+var superHitSound = new Audio("../audio/superHit.mp3");
+superHitSound.volume = .5;
+var superAvailableSound = new Audio("../audio/superAvailable.mp3");
+superAvailableSound.volume = .5;
+var superAvailableSoundPlayed = false;
+const superHitDelay = 60;
+var superHitDelayTimer = superHitDelay;
+var superHitting = false;
 
 export class Player {
   constructor(x, y) {
@@ -34,6 +46,9 @@ export class Player {
     this.lastFireTime = 0;
     this.firingAngle = Math.PI * 1.5; // Initial firing angle (up)
     this.projectileDamage = 50;
+    // Super Fire
+    this.superDelay = 300;
+    this.superDelayTimer = this.superDelay;
   }
 
   update(ctx, foes, keys) {
@@ -75,15 +90,44 @@ export class Player {
       this.firingAngle = 0; // Right
     }
 
+    // Super Fire
+    if (this.superDelayTimer != 0) {
+      this.superDelayTimer--;
+    } else {
+      //console.log("You can super now!!")
+      if (!superAvailableSoundPlayed) {
+        superAvailableSound.play();
+        superAvailableSoundPlayed = true;
+      }
+      if (keys["f"]) {
+        this.superDelayTimer = this.superDelay;
+        this.fireProjectile(true);
+        superShotSound.play();
+        superAvailableSoundPlayed = false;
+        //console.log("SUPER FIRE");
+      }
+    }
+    // Super Hit
+    if (superHitting) {
+      var max = -1 + (superHitDelayTimer / 60) * (20 - 1);
+      linkDamage(ctx, foes, max);
+      if (superHitDelayTimer != 0) {
+        superHitDelayTimer--;
+      }
+      else {
+        superHitting = false;
+        superHitDelayTimer = superHitDelay;
+        for (let i = 0; i < foes.length; i++) {
+          foes[i].hit(500);
+        }
+        superShotSound.play();
+      }
+    }
+
     // Fire projectiles
-
     if (currentTime - this.lastFireTime >= this.fireRate) {
-      this.fireProjectile();
+      this.fireProjectile(false);
       this.lastFireTime = currentTime;
-
-      // var randomSound = Math.floor(Math.random() * 2);
-      // playerFireProjectileSounds[randomSound].currentTime = 0;
-      // playerFireProjectileSounds[randomSound].play();
     }
 
     // Update and render projectiles
@@ -95,6 +139,11 @@ export class Player {
       for (let j = 0; j < foes.length; j++) {
         const foe = foes[j];
         if (projectileHitsFoe(foe, projectile)) {
+          if (projectile.superFire) {
+            superHitting = true;
+            superHitSound.play();
+          }
+
           // Apply damage to the foe
           foe.hit(projectile.damage);
 
@@ -113,6 +162,11 @@ export class Player {
   }
 
   render(ctx) {
+    if (superAvailableSoundPlayed) {
+      ctx.textAlign = "center";
+      ctx.fillText("PRESS [F] FOR SUPERFIRE", ctx.canvas.width / 2, ctx.canvas.height - 80);
+    }
+
     ctx.fillStyle = "white";
     ctx.fillRect(this.x - (this.width / 2), this.y - (this.width / 2), this.width, this.height);
     displayHealth(ctx, this.health);
@@ -123,8 +177,11 @@ export class Player {
     });
   }
 
-  fireProjectile() {
-    const playerProjectile = new Projectile(this.x, this.y, 10, this.firingAngle, 5, 5, this.projectileDamage, "foe"); // Customize the projectile parameters as needed
+  fireProjectile(superFire) {
+    var speed = superFire ? 20 : 10;
+    var size = superFire ? 20 : 5;
+
+    const playerProjectile = new Projectile(this.x, this.y, speed, this.firingAngle, size, size, this.projectileDamage, "foe", superFire);
     this.projectiles.push(playerProjectile);
   }
 

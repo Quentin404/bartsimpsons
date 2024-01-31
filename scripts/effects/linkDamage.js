@@ -2,7 +2,7 @@ import { solveTSP } from "../algorithms/travelingSalesman.js";
 
 function linkDamage(ctx, points, maxLinks) {
 
-    if (points.length < 2){
+    if (points.length < 2) {
         return;
     }
     // Use the TSP algorithm to find the optimal path
@@ -10,7 +10,7 @@ function linkDamage(ctx, points, maxLinks) {
 
     // Render the path connecting the points
     ctx.strokeStyle = "blue";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 5;
     ctx.beginPath();
     ctx.moveTo(points[tspPath[0]].x, points[tspPath[0]].y);
 

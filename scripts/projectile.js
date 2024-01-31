@@ -1,5 +1,5 @@
 export class Projectile {
-  constructor(x, y, speed, direction, height, width, damage, target) {
+  constructor(x, y, speed, direction, height, width, damage, target, superFire) {
     // Basics
     this.x = x;
     this.y = y;
@@ -11,6 +11,7 @@ export class Projectile {
     this.width = width;
     this.active = true;
     this.target = target;
+    this.superFire = superFire;
 
     // Stats
     this.damage = damage;
@@ -28,12 +29,12 @@ export class Projectile {
 
   render(ctx) {
     if (this.active) {
-      if (this.target === "player"){
+      if (this.target === "player") {
         ctx.fillStyle = "blue"
       } else {
         ctx.fillStyle = "white";
       }
-      ctx.fillRect(this.x - (this.width/2), this.y - (this.width/2), this.width, this.height);
+      ctx.fillRect(this.x - (this.width / 2), this.y - (this.width / 2), this.width, this.height);
     }
   }
 }

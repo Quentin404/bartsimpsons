@@ -1,6 +1,5 @@
 import { Player } from "./player.js"
 import { FoeGenerator } from "./foeGenerator.js";
-import { linkDamage } from "./effects/linkDamage.js";
 import { CustomText } from "./utils.js";
 
 // Initialize the game canvas
@@ -128,6 +127,8 @@ function gameLoop() {
         playerDeadSound.currentTime = 0;
         playerDeadSound.play();
 
+        SwitchMusic(true);
+
         if (foeGenerator.playerScore > bestScore) {
           bestScore = foeGenerator.playerScore;
           record = " - Nouveau record !"
@@ -145,12 +146,10 @@ function gameLoop() {
       ctx.font = "16px Arial";
       ctx.fillStyle = "white";
       ctx.textAlign = "right";
-      ctx.fillText("Score: " + foeGenerator.playerScore, 400, 30); // You can adjust the position as needed
-      ctx.fillText("Best: " + bestScore, 400, 55); // You can adjust the position as needed
+      ctx.fillText("Score: " + foeGenerator.playerScore, 400, 30);
+      ctx.fillText("Best: " + bestScore, 400, 55);
 
       HandleGameInputs();
-
-      linkDamage(ctx, foeGenerator.foes, 20);
 
       player.update(ctx, foeGenerator.foes, keys);
       player.render(ctx);
@@ -162,8 +161,6 @@ function gameLoop() {
       }
 
     } else if (currentGamemode === Gamemode.dead) {
-      SwitchMusic(true);
-
       CustomText(ctx, "Vous êtes mort", 24, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2);
       CustomText(ctx, "Score : " + foeGenerator.playerScore + record, 16, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2 + 30);
       CustomText(ctx, "Appuyez sur entrée pour recommencer", 16, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2 + 60);
