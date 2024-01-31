@@ -17,17 +17,17 @@ export class FoeGenerator {
     }
 
     initializePopulation(ctx) {
-        const randomShootingPattern = Math.floor(Math.random() * 3); // 0, 1, or 2
         for (let i = 0; i < this.populationSize; i++) {
+            const randomShootingPattern = Math.floor(Math.random() * 3); // 0, 1, or 2
             const foe = new BasicFoe(
                 Math.random() * ctx.canvas.width, // random x position
                 Math.random() * ctx.canvas.height, // random y position
-                Math.random() * 4 + 1, // random movement speed
+                Math.random() * 4 + 1, // random movement speed between 1 and 5
                 30, // foe height
                 30, // foe width
                 randomShootingPattern,
                 Math.floor(Math.random() * 100) + 1, // random accuracy between 1 and 100
-                Math.random() * 200 + 40, // random fire rate
+                Math.random() * 200 + 40, // random fire rate between 40 and 240
                 200 // move rate
             );
 
@@ -83,19 +83,24 @@ export class FoeGenerator {
 
         allFoes.sort((a, b) => b.performance - a.performance); // Sort by performance
 
-        const numParents = Math.floor(this.populationSize / 4); // Select the best 25%
+        const numParents = Math.floor(this.populationSize / 2); // Select the best 50%
         return allFoes.slice(0, numParents);
     }
 
     // Crossing foes traits to optimize performance
     crossover(ctx, parent1, parent2) {
+        let firingPattern = Math.floor(Math.random() * 3);
+        if (Math.random() < 0.40) { // 40% chance of inheriting pattern
+            firingPattern = parent1.currentFiringPattern;
+        }
+
         return new BasicFoe(
             Math.random() * ctx.canvas.width, // random x position
             Math.random() * ctx.canvas.height, // random y position
             (parent1.speed + parent2.speed) / 2, // Average speed
             parent1.height,
             parent1.width,
-            parent1.currentFiringPattern,
+            firingPattern,
             (parent1.accuracy + parent2.accuracy) / 2, // Average precision
             (parent1.fireRate + parent2.fireRate) / 2, // Average fire rate
             parent1.moveRate
@@ -104,12 +109,15 @@ export class FoeGenerator {
 
     // Apply mutations to foe
     mutate(foe) {
-        const mutationRate = 0.1;
-        foe.x += (Math.random() - 0.5) * mutationRate;
-        foe.y += (Math.random() - 0.5) * mutationRate;
+        const mutationRate = 2;
         foe.speed += (Math.random() - 0.5) * mutationRate;
-        foe.fireRate += (Math.random() - 0.5) * mutationRate;
+        foe.accuracy += (Math.random() - 0.5) * mutationRate * 5;
+        foe.fireRate += (Math.random() - 0.5) * mutationRate * 10;
         foe.speed = Math.max(1, foe.speed);
         foe.fireRate = Math.max(40, foe.fireRate);
+
+        if (Math.random() < 0.15) { // 15% chance of a random pattern
+            foe.shootingPattern = Math.floor(Math.random() * 3); // 0, 1 or 2
+        }
     }
 }

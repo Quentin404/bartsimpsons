@@ -29,6 +29,8 @@ export class BasicFoe {
     this.dy = 0;
     this.height = height;
     this.width = width;
+    this.foeImage = new Image();
+    this.loadFoeImage();
 
     // Firing
     this.firingPatterns = {
@@ -124,8 +126,20 @@ export class BasicFoe {
   }
 
   render(ctx) {
-    ctx.fillStyle = "red";
+    if (this.currentFiringPattern === 0){
+      ctx.fillStyle = "red";
+    } else if (this.currentFiringPattern === 1) {
+      ctx.fillStyle = "blue";
+    } else {
+      ctx.fillStyle = "green";
+    }
     ctx.fillRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
+
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(Angle(90));
+    ctx.drawImage(this.foeImage, -this.width / 2, -this.height / 2, this.width, this.height);
+    ctx.restore();
 
     // Render projectiles
     this.projectiles.forEach((projectile) => {
@@ -171,6 +185,10 @@ export class BasicFoe {
     const correctedAngle = angleToPlayer + Math.PI + (Math.random() - 0.5) * Math.PI * accuracyFactor;
 
     this.fireProjectile(correctedAngle);
+  }
+
+  loadFoeImage() {
+    this.foeImage.src = "../images/sprites/sprite-foe.png";
   }
 }
 

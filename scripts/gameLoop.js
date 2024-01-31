@@ -78,10 +78,13 @@ function HandleGameInputs() {
 }
 
 let player;
-const foesNumber = 6;
+const foesNumber = 5;
 let foeGenerator;
 let bestScore = 0;
 let record = "";
+
+let bigTextSize = 36;
+let mediumTextSize = 26;
 
 const backgroundImage = new Image();
 backgroundImage.src = "../images/bg.png";
@@ -113,7 +116,11 @@ function gameLoop() {
     ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
     if (currentGamemode === Gamemode.menu) {
-      CustomText(ctx, "Appuyez sur entrée pour lancer le jeu", 24, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2)
+      CustomText(ctx, "Press Enter to play", bigTextSize, "Bourgeois Bold Condensed", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2)
+      CustomText(ctx, "[ZQSD] - Move", mediumTextSize, "Bourgeois Bold Condensed", "white", "center", ctx.canvas.width / 2, (ctx.canvas.height / 2) + 40)
+      CustomText(ctx, "[Arrows] - Aim", mediumTextSize, "Bourgeois Bold Condensed", "white", "center", ctx.canvas.width / 2, (ctx.canvas.height / 2) + 70)
+      CustomText(ctx, "[F] - Superfire", mediumTextSize, "Bourgeois Bold Condensed", "white", "center", ctx.canvas.width / 2, (ctx.canvas.height / 2) + 100)
+      CustomText(ctx, "[M] - Toggle music", mediumTextSize, "Bourgeois Bold Condensed", "white", "center", ctx.canvas.width / 2, (ctx.canvas.height / 2) + 130)
 
       if (keys["Enter"]) {
         currentGamemode = Gamemode.game;
@@ -131,7 +138,7 @@ function gameLoop() {
 
         if (foeGenerator.playerScore > bestScore) {
           bestScore = foeGenerator.playerScore;
-          record = " - Nouveau record !"
+          record = " - NEW RECORD !"
         } else {
           record = "";
         }
@@ -143,7 +150,7 @@ function gameLoop() {
       }
 
       // Display score
-      ctx.font = "16px Arial";
+      ctx.font = "24px Bourgeois Bold Condensed";
       ctx.fillStyle = "white";
       ctx.textAlign = "right";
       ctx.fillText("Score: " + foeGenerator.playerScore, 400, 30);
@@ -161,9 +168,9 @@ function gameLoop() {
       }
 
     } else if (currentGamemode === Gamemode.dead) {
-      CustomText(ctx, "Vous êtes mort", 24, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2);
-      CustomText(ctx, "Score : " + foeGenerator.playerScore + record, 16, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2 + 30);
-      CustomText(ctx, "Appuyez sur entrée pour recommencer", 16, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2 + 60);
+      CustomText(ctx, "K.I.A", bigTextSize, "Bourgeois Bold Condensed", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2);
+      CustomText(ctx, "Score : " + foeGenerator.playerScore + record, mediumTextSize, "Bourgeois Bold Condensed", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2 + 40);
+      CustomText(ctx, "Press Enter to try again", mediumTextSize, "Bourgeois Bold Condensed", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2 + 70);
 
       if (keys["Enter"]) {
         SwitchMusic(false);
@@ -173,8 +180,8 @@ function gameLoop() {
         console.log("changing gamemode to: " + currentGamemode);
       }
     } else if (currentGamemode === Gamemode.end) {
-      CustomText(ctx, "Victoire !", 24, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2);
-      CustomText(ctx, "Appuyez sur entrée pour recommencer", 16, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2 + 30);
+      CustomText(ctx, "Ultimate Victory!", bigTextSize, "Bourgeois Bold Condensed", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2);
+      CustomText(ctx, "Press Enter to try again", mediumTextSize, "Bourgeois Bold Condensed", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2 + 40);
 
       if (keys["Enter"]) {
         foeGenerator.playerScore = 0;
@@ -189,7 +196,7 @@ function gameLoop() {
     music.volume = 0;
     musicDead.volume = 0;
   } else if (keys["p"]) {
-    if (currentGamemode == Gamemode.game) {
+    if (currentGamemode === Gamemode.game) {
       music.volume = musicVolume;
     } else {
       musicDead.volume = musicDeadVolume;

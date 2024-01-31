@@ -1,5 +1,6 @@
 import { Projectile } from "./projectile.js";
 import { linkDamage } from "./effects/linkDamage.js";
+import {Angle} from "./utils.js";
 
 var volume = .2;
 var playerFireProjectileSounds = [
@@ -15,16 +16,16 @@ var playerHitSounds = [
 ];
 playerHitSounds.forEach(e => { e.volume = volume });
 
-var superShotSound = new Audio("../audio/superShot.mp3");
+const superShotSound = new Audio("../audio/superShot.mp3");
 superShotSound.volume = .5;
-var superHitSound = new Audio("../audio/superHit.mp3");
+const superHitSound = new Audio("../audio/superHit.mp3");
 superHitSound.volume = .5;
-var superAvailableSound = new Audio("../audio/superAvailable.mp3");
+const superAvailableSound = new Audio("../audio/superAvailable.mp3");
 superAvailableSound.volume = .5;
-var superAvailableSoundPlayed = false;
+let superAvailableSoundPlayed = false;
 const superHitDelay = 60;
-var superHitDelayTimer = superHitDelay;
-var superHitting = false;
+let superHitDelayTimer = superHitDelay;
+let superHitting = false;
 
 export class Player {
   constructor(x, y) {
@@ -34,11 +35,13 @@ export class Player {
     this.speed = 5;
     this.dx = 0;
     this.dy = 0;
-    this.height = 20;
-    this.width = 20;
+    this.height = 40;
+    this.width = 40;
+    this.playerImage = new Image();
+    this.loadPlayerImage();
 
     // Stats
-    this.health = 2000;
+    this.health = 4000;
 
     // Firing
     this.fireRate = 50;
@@ -91,7 +94,7 @@ export class Player {
     }
 
     // Super Fire
-    if (this.superDelayTimer != 0) {
+    if (this.superDelayTimer !== 0) {
       this.superDelayTimer--;
     } else {
       //console.log("You can super now!!")
@@ -111,7 +114,7 @@ export class Player {
     if (superHitting) {
       var max = -1 + (superHitDelayTimer / 60) * (20 - 1);
       linkDamage(ctx, foes, max);
-      if (superHitDelayTimer != 0) {
+      if (superHitDelayTimer !== 0) {
         superHitDelayTimer--;
       }
       else {
@@ -164,11 +167,14 @@ export class Player {
   render(ctx) {
     if (superAvailableSoundPlayed) {
       ctx.textAlign = "center";
+      ctx.font = '28px Bourgeois Bold Condensed';
       ctx.fillText("PRESS [F] FOR SUPERFIRE", ctx.canvas.width / 2, ctx.canvas.height - 80);
     }
-
-    ctx.fillStyle = "white";
-    ctx.fillRect(this.x - (this.width / 2), this.y - (this.width / 2), this.width, this.height);
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.firingAngle + Angle(90));
+    ctx.drawImage(this.playerImage, -this.width / 2, -this.height / 2, this.width, this.height);
+    ctx.restore();
     displayHealth(ctx, this.health);
 
     // Render projectiles
@@ -196,13 +202,17 @@ export class Player {
   isDead() {
     return this.health <= 0;
   }
+
+  loadPlayerImage() {
+    this.playerImage.src = "../images/sprites/sprite-player.png";
+  }
 }
 
 function displayHealth(ctx, health) {
-  ctx.font = "16px Arial";
+  ctx.font = "24px Bourgeois Bold Condensed";
   ctx.fillStyle = "white";
   ctx.textAlign = "left";
-  ctx.fillText("Health: " + health, 10, 30); // You can adjust the position as needed
+  ctx.fillText("HP " + health, 10, 30); // You can adjust the position as needed
 }
 
 function projectileHitsFoe(foe, projectile) {
