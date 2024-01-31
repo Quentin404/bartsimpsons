@@ -1,4 +1,12 @@
-import {BasicFoe} from "./basicFoe.js";
+import { BasicFoe } from "./basicFoe.js";
+
+var volume = .6;
+var foeDeadSounds = [
+    new Audio("../audio/foeDead1.mp3"),
+    new Audio("../audio/foeDead2.mp3"),
+    new Audio("../audio/foeDead3.mp3")
+];
+foeDeadSounds.forEach(e => { e.volume = volume });
 
 export class FoeGenerator {
     constructor(populationSize) {
@@ -27,23 +35,27 @@ export class FoeGenerator {
         }
     }
 
-    update(ctx, player){
+    update(ctx, player) {
         this.evaluatePopulation();
-        for (let i = 0; i < this.foes.length; i++){
+        for (let i = 0; i < this.foes.length; i++) {
             const foe = this.foes[i];
             foe.update(ctx, player);
-            if (foe.isDead()){
+            if (foe.isDead()) {
+                var randomSound = Math.floor(Math.random() * 2);
+                foeDeadSounds[randomSound].currentTime = 0;
+                foeDeadSounds[randomSound].play();
+
                 this.playerScore += 1;
                 this.deadFoes.push(foe);
                 this.foes.splice(i, 1);
             }
         }
-        if (this.foes.length < this.populationSize){
+        if (this.foes.length < this.populationSize) {
             this.addFoe(ctx);
         }
     }
 
-    addFoe(ctx){
+    addFoe(ctx) {
         const parents = this.selectParents();
 
         for (let i = this.foes.length; i < this.populationSize; i++) {

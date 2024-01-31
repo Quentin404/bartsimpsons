@@ -24,6 +24,9 @@ const Gamemode = {
 
 let currentGamemode = Gamemode.menu;
 
+var playerDeadSound = new Audio("../audio/playerDead.mp3");
+playerDeadSound.volume = .2;
+
 // Handle user input
 const keys = {};
 
@@ -104,6 +107,9 @@ function gameLoop() {
     }
     else if (currentGamemode === Gamemode.game) {
       if (player.isDead()) {
+        playerDeadSound.currentTime = 0;
+        playerDeadSound.play();
+
         if (foeGenerator.playerScore > bestScore) {
           bestScore = foeGenerator.playerScore;
           record = " - Nouveau record !"

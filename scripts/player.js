@@ -1,4 +1,18 @@
-import {Projectile} from "./projectile.js";
+import { Projectile } from "./projectile.js";
+
+var volume = .2;
+var playerFireProjectileSounds = [
+  new Audio("../audio/playerFireProjectile1.mp3"),
+  new Audio("../audio/playerFireProjectile2.mp3"),
+  new Audio("../audio/playerFireProjectile3.mp3")
+];
+playerFireProjectileSounds.forEach(e => { e.volume = volume; });
+var playerHitSounds = [
+  new Audio("../audio/playerHit1.mp3"),
+  new Audio("../audio/playerHit2.mp3"),
+  new Audio("../audio/playerHit3.mp3")
+];
+playerHitSounds.forEach(e => { e.volume = volume });
 
 export class Player {
   constructor(x, y) {
@@ -30,12 +44,12 @@ export class Player {
 
     if (this.x < this.width / 2)
       this.x = this.width / 2;
-    else if (this.x > ctx.canvas.width - this.width/2)
-      this.x = ctx.canvas.width - this.width/2;
+    else if (this.x > ctx.canvas.width - this.width / 2)
+      this.x = ctx.canvas.width - this.width / 2;
     if (this.y < this.height / 2)
       this.y = this.height / 2;
-    else if (this.y > ctx.canvas.height - this.height/2)
-      this.y = ctx.canvas.height - this.height/2;
+    else if (this.y > ctx.canvas.height - this.height / 2)
+      this.y = ctx.canvas.height - this.height / 2;
 
     // Determine the firing angle based on arrow keys
 
@@ -66,6 +80,10 @@ export class Player {
     if (currentTime - this.lastFireTime >= this.fireRate) {
       this.fireProjectile();
       this.lastFireTime = currentTime;
+
+      // var randomSound = Math.floor(Math.random() * 2);
+      // playerFireProjectileSounds[randomSound].currentTime = 0;
+      // playerFireProjectileSounds[randomSound].play();
     }
 
     // Update and render projectiles
@@ -96,7 +114,7 @@ export class Player {
 
   render(ctx) {
     ctx.fillStyle = "white";
-    ctx.fillRect(this.x - (this.width/2), this.y - (this.width/2), this.width, this.height);
+    ctx.fillRect(this.x - (this.width / 2), this.y - (this.width / 2), this.width, this.height);
     displayHealth(ctx, this.health);
 
     // Render projectiles
@@ -111,6 +129,10 @@ export class Player {
   }
 
   hit(damage) {
+    var randomSound = Math.floor(Math.random() * 2);
+    playerHitSounds[randomSound].currentTime = 0;
+    playerHitSounds[randomSound].play();
+
     this.health -= damage;
   }
 
@@ -131,9 +153,9 @@ function projectileHitsFoe(foe, projectile) {
   // Return true if there is a collision, false otherwise
   // You may check if the projectile's position is within the player's bounds
   return (
-      projectile.x >= foe.x - foe.width / 2 &&
-      projectile.x <= foe.x + foe.width / 2 &&
-      projectile.y >= foe.y - foe.height / 2 &&
-      projectile.y <= foe.y + foe.height / 2
+    projectile.x >= foe.x - foe.width / 2 &&
+    projectile.x <= foe.x + foe.width / 2 &&
+    projectile.y >= foe.y - foe.height / 2 &&
+    projectile.y <= foe.y + foe.height / 2
   );
 }

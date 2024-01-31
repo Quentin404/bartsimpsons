@@ -3,17 +3,21 @@ import { Angle } from "./utils.js";
 
 var volume = .2;
 var foeFireProjectileSounds = [
+  new Audio("../audio/playerFireProjectile1.mp3"),
+  new Audio("../audio/playerFireProjectile2.mp3"),
+  new Audio("../audio/playerFireProjectile3.mp3"),
   new Audio("../audio/foeFireProjectile1.mp3"),
   new Audio("../audio/foeFireProjectile2.mp3"),
   new Audio("../audio/foeFireProjectile3.mp3")
 ];
 foeFireProjectileSounds.forEach(e => { e.volume = volume; });
-var playerHitSounds = [
-  new Audio("../audio/playerHit1.mp3"),
-  new Audio("../audio/playerHit2.mp3"),
-  new Audio("../audio/playerHit3.mp3")
+
+var foeHitSounds = [
+  new Audio("../audio/foeHit1.mp3"),
+  new Audio("../audio/foeHit2.mp3"),
+  new Audio("../audio/foeHit3.mp3")
 ];
-playerHitSounds.forEach(e => { e.volume = volume });
+foeHitSounds.forEach(e => { e.volume = volume });
 
 export class BasicFoe {
   constructor(x, y, speed, height, width, shootingPattern, accuracy, fireRate, moveRate) {
@@ -76,11 +80,11 @@ export class BasicFoe {
 
     // Fire projectiles
     if (currentTime - this.lastFireTime >= this.fireRate) {
-      if(this.currentFiringPattern === this.firingPatterns.spiral){
+      if (this.currentFiringPattern === this.firingPatterns.spiral) {
         this.spiralShootingPattern();
       } else if (this.currentFiringPattern === this.firingPatterns.target) {
         this.playerTargetShootingPattern(player)
-      } else if (this.currentFiringPattern === this.firingPatterns.badShooter){
+      } else if (this.currentFiringPattern === this.firingPatterns.badShooter) {
         this.badShooterShootingPattern(player)
       }
       this.lastFireTime = currentTime;
@@ -98,10 +102,6 @@ export class BasicFoe {
       if (projectileHitsPlayer(player, projectile)) {
         this.hitsToPlayer += 1;
         player.hit(projectile.damage);
-
-        var randomSound = Math.floor(Math.random() * 2);
-        playerHitSounds[randomSound].currentTime = 0;
-        playerHitSounds[randomSound].play();
 
         this.projectiles.splice(i, 1);
       } else if (!projectile.active) {
@@ -134,6 +134,10 @@ export class BasicFoe {
   }
 
   hit(damage) {
+    var randomSound = Math.floor(Math.random() * 2);
+    foeHitSounds[randomSound].currentTime = 0;
+    foeHitSounds[randomSound].play();
+
     this.health -= damage;
   }
 
