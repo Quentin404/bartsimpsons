@@ -70,11 +70,11 @@ const backgroundImage = new Image();
 backgroundImage.src = "../images/bg.png";
 
 function InitGame() {
-  
+
   // Generate foes
   foeGenerator = new FoeGenerator(foesNumber);
   foeGenerator.initializePopulation(ctx);
-  
+
   // Create the player object
   player = new Player((canvas.width / 2), (canvas.height / 2));
 }
@@ -84,26 +84,27 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
   now = Date.now();
   delta = now - then;
-  
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
 
   if (delta > interval) {
     then = now - (delta % interval);
 
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
     ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
     if (currentGamemode === Gamemode.menu) {
-      CustomText(ctx, "Appuyez sur entrée pour lancer le jeu", 24, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2)
+      CustomText(ctx, "Appuyez sur entrée pour lancer le jeu", 24, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2)
 
       if (keys["Enter"]) {
         currentGamemode = Gamemode.game;
         console.log("changing gamemode to: " + currentGamemode);
       }
-      
+
     }
     else if (currentGamemode === Gamemode.game) {
       if (player.isDead()) {
-        if (foeGenerator.playerScore > bestScore){
+        if (foeGenerator.playerScore > bestScore) {
           bestScore = foeGenerator.playerScore;
           record = " - Nouveau record !"
         } else {
@@ -111,7 +112,7 @@ function gameLoop() {
         }
         currentGamemode = Gamemode.dead;
         return;
-      } else if (foeGenerator.foes.length < 1){
+      } else if (foeGenerator.foes.length < 1) {
         currentGamemode = Gamemode.end;
         return;
       }
@@ -137,9 +138,9 @@ function gameLoop() {
       }
 
     } else if (currentGamemode === Gamemode.dead) {
-      CustomText(ctx, "Vous êtes mort", 24, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2);
-      CustomText(ctx, "Score : " + foeGenerator.playerScore + record, 16, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2 + 30);
-      CustomText(ctx, "Appuyez sur entrée pour recommencer", 16, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2 + 60);
+      CustomText(ctx, "Vous êtes mort", 24, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2);
+      CustomText(ctx, "Score : " + foeGenerator.playerScore + record, 16, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2 + 30);
+      CustomText(ctx, "Appuyez sur entrée pour recommencer", 16, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2 + 60);
 
       if (keys["Enter"]) {
         foeGenerator.playerScore = 0;
@@ -148,8 +149,8 @@ function gameLoop() {
         console.log("changing gamemode to: " + currentGamemode);
       }
     } else if (currentGamemode === Gamemode.end) {
-      CustomText(ctx, "Victoire !", 24, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2);
-      CustomText(ctx, "Appuyez sur entrée pour recommencer", 16, "Arial", "white", "center", ctx.canvas.width/2, ctx.canvas.height/2 + 30);
+      CustomText(ctx, "Victoire !", 24, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2);
+      CustomText(ctx, "Appuyez sur entrée pour recommencer", 16, "Arial", "white", "center", ctx.canvas.width / 2, ctx.canvas.height / 2 + 30);
 
       if (keys["Enter"]) {
         foeGenerator.playerScore = 0;
@@ -161,7 +162,7 @@ function gameLoop() {
   }
 }
 
-backgroundImage.onload = function() {
+backgroundImage.onload = function () {
   InitGame();
   gameLoop();
 };
