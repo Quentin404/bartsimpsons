@@ -191,8 +191,7 @@ function gameLoop() {
   if (keys["m"]) {
     music.volume = 0;
     musicDead.volume = 0;
-  }
-  if (keys["p"]) {
+  } else if (keys["p"]) {
     if (currentGamemode == Gamemode.game) {
       music.volume = musicVolume;
     } else {
