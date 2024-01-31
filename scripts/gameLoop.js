@@ -127,7 +127,7 @@ function gameLoop() {
 
       linkDamage(ctx, foeGenerator.foes, 20);
 
-      player.update(ctx, foeGenerator.foes);
+      player.update(ctx, foeGenerator.foes, keys);
       player.render(ctx);
 
       foeGenerator.update(ctx, player);

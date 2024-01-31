@@ -16,7 +16,7 @@ var playerHitSounds = [
 playerHitSounds.forEach(e => { e.volume = volume });
 
 export class BasicFoe {
-  constructor(x, y, speed, height, width, fireRate, moveRate) {
+  constructor(x, y, speed, height, width, shootingPattern, accuracy, fireRate, moveRate) {
     // Basics
     this.x = x;
     this.y = y;
@@ -27,7 +27,14 @@ export class BasicFoe {
     this.width = width;
 
     // Firing
+    this.firingPatterns = {
+      spiral: 0,
+      target: 1,
+      badShooter: 2
+    }
+    this.currentFiringPattern = shootingPattern;
     this.fireRate = fireRate;
+    this.accuracy = accuracy; // Between 1 and 100, 100 being the most accurate
     this.projectiles = [];
     this.lastFireTime = 0;
     this.firingAngle = 90;
@@ -69,8 +76,13 @@ export class BasicFoe {
 
     // Fire projectiles
     if (currentTime - this.lastFireTime >= this.fireRate) {
-      this.fireProjectile(Angle(this.firingAngle), this.projectileDamage);
-      this.firingAngle += 15;
+      if(this.currentFiringPattern === this.firingPatterns.spiral){
+        this.spiralShootingPattern();
+      } else if (this.currentFiringPattern === this.firingPatterns.target) {
+        this.playerTargetShootingPattern(player)
+      } else if (this.currentFiringPattern === this.firingPatterns.badShooter){
+        this.badShooterShootingPattern(player)
+      }
       this.lastFireTime = currentTime;
 
       var randomSound = Math.floor(Math.random() * 2);
@@ -102,7 +114,7 @@ export class BasicFoe {
   }
 
   fireProjectile(angle) {
-    const projectile = new Projectile(this.x, this.y, 5, angle, 5, 5, this.projectileDamage, "player");
+    const projectile = new Projectile(this.x, this.y, 3, angle, 5, 5, this.projectileDamage, "player");
     this.projectiles.push(projectile);
   }
 
@@ -128,6 +140,34 @@ export class BasicFoe {
   isDead() {
     return this.health < 0;
   }
+
+  // Fires in a spiral
+  spiralShootingPattern() {
+    this.firingAngle += 15;
+    this.fireProjectile(Angle(this.firingAngle));
+  }
+
+  // Fires in the direction of the player
+  playerTargetShootingPattern(player) {
+    const angleToPlayer = Math.atan2(player.y - this.y, player.x - this.x);
+
+    const accuracyFactor = (100 - this.accuracy) / 100;
+
+    const correctedAngle = angleToPlayer + (Math.random() - 0.5) * Math.PI * accuracyFactor;
+
+    this.fireProjectile(correctedAngle);
+  }
+
+  // Fires in the opposite direction of the player
+  badShooterShootingPattern(player) {
+    const angleToPlayer = Math.atan2(player.y - this.y, player.x - this.x);
+
+    const accuracyFactor = (100 - this.accuracy) / 100 * 5;
+
+    const correctedAngle = angleToPlayer + Math.PI + (Math.random() - 0.5) * Math.PI * accuracyFactor;
+
+    this.fireProjectile(correctedAngle);
+  }
 }
 
 function projectileHitsPlayer(player, projectile) {
@@ -141,3 +181,4 @@ function projectileHitsPlayer(player, projectile) {
     projectile.y <= player.y + player.height / 2
   );
 }
+

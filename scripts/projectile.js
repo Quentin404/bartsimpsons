@@ -29,7 +29,7 @@ export class Projectile {
   render(ctx) {
     if (this.active) {
       if (this.target === "player"){
-        ctx.fillStyle = "red"
+        ctx.fillStyle = "blue"
       } else {
         ctx.fillStyle = "white";
       }

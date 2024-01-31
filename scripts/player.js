@@ -12,17 +12,17 @@ export class Player {
     this.width = 20;
 
     // Stats
-    this.health = 1000;
+    this.health = 2000;
 
     // Firing
     this.fireRate = 50;
     this.projectiles = [];
     this.lastFireTime = 0;
-    this.firingAngle = 4.71239;
+    this.firingAngle = Math.PI * 1.5; // Initial firing angle (up)
     this.projectileDamage = 50;
   }
 
-  update(ctx, foes) {
+  update(ctx, foes, keys) {
     const currentTime = performance.now();
 
     this.x += this.dx;
@@ -36,6 +36,30 @@ export class Player {
       this.y = this.height / 2;
     else if (this.y > ctx.canvas.height - this.height/2)
       this.y = ctx.canvas.height - this.height/2;
+
+    // Determine the firing angle based on arrow keys
+
+    if (keys["ArrowUp"]) {
+      if (keys["ArrowLeft"]) {
+        this.firingAngle = Math.PI * 1.25; // Up-Left
+      } else if (keys["ArrowRight"]) {
+        this.firingAngle = Math.PI * 1.75; // Up-Right
+      } else {
+        this.firingAngle = Math.PI * 1.5; // Up
+      }
+    } else if (keys["ArrowDown"]) {
+      if (keys["ArrowLeft"]) {
+        this.firingAngle = Math.PI * 0.75; // Down-Left
+      } else if (keys["ArrowRight"]) {
+        this.firingAngle = Math.PI * 0.25; // Down-Right
+      } else {
+        this.firingAngle = Math.PI * 0.5; // Down
+      }
+    } else if (keys["ArrowLeft"]) {
+      this.firingAngle = Math.PI; // Left
+    } else if (keys["ArrowRight"]) {
+      this.firingAngle = 0; // Right
+    }
 
     // Fire projectiles
 
@@ -82,7 +106,7 @@ export class Player {
   }
 
   fireProjectile() {
-    const playerProjectile = new Projectile(this.x, this.y, 5, this.firingAngle, 5, 5, this.projectileDamage, "foe"); // Customize the projectile parameters as needed
+    const playerProjectile = new Projectile(this.x, this.y, 10, this.firingAngle, 5, 5, this.projectileDamage, "foe"); // Customize the projectile parameters as needed
     this.projectiles.push(playerProjectile);
   }
 
